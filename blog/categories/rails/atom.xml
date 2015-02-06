@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Rails | Blog do ManuWell]]></title>
   <link href="http://wjsantos.github.io/blog/categories/rails/atom.xml" rel="self"/>
   <link href="http://wjsantos.github.io/"/>
-  <updated>2015-02-06T21:20:29-02:00</updated>
+  <updated>2015-02-06T21:24:34-02:00</updated>
   <id>http://wjsantos.github.io/</id>
   <author>
     <name><![CDATA[Wellington Santos]]></name>
@@ -26,6 +26,9 @@ e, de forma modularizada, compôr nosso javascript da aplicação.</p>
 
 <p>O que em nenhum lugar se fala ou comenta é: <strong>como fazer scripts que rodem
 em páginas específicas? Como estruturar de forma escalável seus assets?</strong></p>
+
+<!-- more -->
+
 
 <h2>Como estruturar então?</h2>
 
