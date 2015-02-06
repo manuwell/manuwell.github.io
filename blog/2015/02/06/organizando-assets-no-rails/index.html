@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Blog do ManuWell</title>
+  <title>Organizando Assets De Javascript No Rails - Blog do ManuWell</title>
   <meta name="author" content="Wellington Santos">
 
   
@@ -20,7 +20,7 @@ e, de &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://wjsantos.github.io/">
+  <link rel="canonical" href="http://wjsantos.github.io/blog/2015/02/06/organizando-assets-no-rails/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Blog do ManuWell" type="application/atom+xml">
@@ -77,15 +77,12 @@ e, de &hellip;">
 </nav>
   <div id="main">
     <div id="content">
-      <div class="blog-index">
+      <div>
+<article class="hentry" role="article">
   
-  
-  
-    <article>
-      
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2015/02/06/organizando-assets-no-rails/">Organizando Assets De Javascript No Rails</a></h1>
+      <h1 class="entry-title">Organizando Assets De Javascript No Rails</h1>
     
     
       <p class="meta">
@@ -101,7 +98,7 @@ e, de &hellip;">
   </header>
 
 
-  <div class="entry-content"><p>Sabemos que o <code>application.js</code> centraliza os javascripts
+<div class="entry-content"><p>Sabemos que o <code>application.js</code> centraliza os javascripts
 de uma aplicação rails.</p>
 
 <p>Este arquivo permite que façamos includes de arquivos externos
@@ -197,18 +194,56 @@ nas views ou com <code>ifs</code> nojentos.</p>
 
 <p>Espero ter ajudado. ;-)</p>
 </div>
-  
-  
 
 
-    </article>
+  <footer>
+    <p class="meta">
+      
   
-  <div class="pagination">
+
+<span class="byline author vcard">Posted by <span class="fn">Wellington Santos</span></span>
+
+      
+
+
+
+
+<time class='entry-date' datetime='2015-02-06T13:38:18-02:00'><span class='date'>06/02/2015</span> <span class='time'>1:38 pm</span></time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/assets/'>assets</a>, <a class='category' href='/blog/categories/rails/'>rails</a>
+  
+</span>
+
+
+    </p>
     
-    <a href="/blog/archives">Blog Archives</a>
-    
-  </div>
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://wjsantos.github.io/blog/2015/02/06/organizando-assets-no-rails/" data-via="manuwell" data-counturl="http://wjsantos.github.io/blog/2015/02/06/organizando-assets-no-rails/" >Tweet</a>
+  
+  
+  
 </div>
+
+    
+    <p class="meta">
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
 <aside class="sidebar">
   
     <section>
@@ -258,6 +293,7 @@ nas views ou com <code>ifs</code> nojentos.</p>
   
 </aside>
 
+
     </div>
   </div>
   <footer role="contentinfo"><p>
@@ -272,7 +308,10 @@ nas views ou com <code>ifs</code> nojentos.</p>
       var disqus_shortname = 'manuwell';
       
         
-        var disqus_script = 'count.js';
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://wjsantos.github.io/blog/2015/02/06/organizando-assets-no-rails/';
+        var disqus_url = 'http://wjsantos.github.io/blog/2015/02/06/organizando-assets-no-rails/';
+        var disqus_script = 'embed.js';
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

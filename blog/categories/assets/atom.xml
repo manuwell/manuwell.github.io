@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Assets | Blog do ManuWell]]></title>
+  <link href="http://wjsantos.github.io/blog/categories/assets/atom.xml" rel="self"/>
+  <link href="http://wjsantos.github.io/"/>
+  <updated>2015-02-06T21:20:29-02:00</updated>
+  <id>http://wjsantos.github.io/</id>
+  <author>
+    <name><![CDATA[Wellington Santos]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Organizando Assets De Javascript No Rails]]></title>
+    <link href="http://wjsantos.github.io/blog/2015/02/06/organizando-assets-no-rails/"/>
+    <updated>2015-02-06T13:38:18-02:00</updated>
+    <id>http://wjsantos.github.io/blog/2015/02/06/organizando-assets-no-rails</id>
+    <content type="html"><![CDATA[<p>Sabemos que o <code>application.js</code> centraliza os javascripts
+de uma aplicação rails.</p>
+
+<p>Este arquivo permite que façamos includes de arquivos externos
+e, de forma modularizada, compôr nosso javascript da aplicação.</p>
+
+<p>O que em nenhum lugar se fala ou comenta é: <strong>como fazer scripts que rodem
+em páginas específicas? Como estruturar de forma escalável seus assets?</strong></p>
+
+<h2>Como estruturar então?</h2>
+
+<p>Em projetos que estou trabalhando começamos a usar uma <code>lib js</code> chamada
+<a href="https://github.com/lucasmazza/page.js">page.js</a> do <a href="https://github.com/lucasmazza">lucasmazza</a>.
+Ela nos permite direcionar javascripts para actions de controllers específicas.</p>
+
+<p>Esse é o primeiro passo para estruturar sua aplicação. Adicionar no
+<code>vendor/assets/javascripts/</code> o arquivo <code>page.min.js</code>.</p>
+
+<p>Tendo adicionado ao vendor, precisamos incluir no nosso <code>application.js</code>:</p>
+
+<pre><code class="javascript">//= require page.min
+
+$(document).ready(function(){
+  // runs page js
+  page.dispatch();
+})
+</code></pre>
+
+<p>Configurado nosso <code>application.js</code>, bora identificar nossas actions em nosso
+template. Para isso, abra seu template <code>views/layouts/application.html.erb</code>
+e insira:</p>
+
+<pre><code class="html">&lt;body data-page="&lt;%= controller_path %&gt;#&lt;%= action_name %&gt;"&gt;
+</code></pre>
+
+<h2>Estrutura de diretórios</h2>
+
+<p>Com tudo preparado, vamos criar um diretório em:</p>
+
+<pre><code class="bash">app/assets/javascripts/pages/
+</code></pre>
+
+<p>E criemos nosso primeiro script que roda somente para a rota &ldquo;tweets#index&rdquo;:</p>
+
+<pre><code class="javascript">// pages/tweets.js
+
+page.at("tweets#index", function(){
+  alert("showing my tweets");
+})
+
+page.at("tweets#show", function(){
+  alert("showing one tweet");
+})
+</code></pre>
+
+<p>Adicione no <code>application.js</code> o diretório de <code>/pages</code> logo abaixo
+da inclusão do <code>page.min</code></p>
+
+<pre><code class="javascript">//= require page.min
+//= require_tree ./pages
+</code></pre>
+
+<p>E voilá.</p>
+
+<p>Temos tudo em uma estrutura escalável, de fácil manutenção e isolada de scripts.</p>
+
+<p>Foi um grande aprendizado para mim que, no início, jogava meus scripts de forma
+desornenada dentro do <code>application.js</code> ou em <code>arquivos</code> desconexos para inclusão direta
+nas views ou com <code>ifs</code> nojentos.</p>
+
+<p>Espero ter ajudado. ;-)</p>
+]]></content>
+  </entry>
+  
+</feed>

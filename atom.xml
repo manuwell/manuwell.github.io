@@ -4,7 +4,7 @@
   <title><![CDATA[Blog do ManuWell]]></title>
   <link href="http://wjsantos.github.io/atom.xml" rel="self"/>
   <link href="http://wjsantos.github.io/"/>
-  <updated>2015-02-01T21:39:44-02:00</updated>
+  <updated>2015-02-06T21:20:29-02:00</updated>
   <id>http://wjsantos.github.io/</id>
   <author>
     <name><![CDATA[Wellington Santos]]></name>
@@ -12,5 +12,108 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Organizando Assets De Javascript No Rails]]></title>
+    <link href="http://wjsantos.github.io/blog/2015/02/06/organizando-assets-no-rails/"/>
+    <updated>2015-02-06T13:38:18-02:00</updated>
+    <id>http://wjsantos.github.io/blog/2015/02/06/organizando-assets-no-rails</id>
+    <content type="html"><![CDATA[<p>Sabemos que o <code>application.js</code> centraliza os javascripts
+de uma aplicação rails.</p>
+
+<p>Este arquivo permite que façamos includes de arquivos externos
+e, de forma modularizada, compôr nosso javascript da aplicação.</p>
+
+<p>O que em nenhum lugar se fala ou comenta é: <strong>como fazer scripts que rodem
+em páginas específicas? Como estruturar de forma escalável seus assets?</strong></p>
+
+<h2>Como estruturar então?</h2>
+
+<p>Em projetos que estou trabalhando começamos a usar uma <code>lib js</code> chamada
+<a href="https://github.com/lucasmazza/page.js">page.js</a> do <a href="https://github.com/lucasmazza">lucasmazza</a>.
+Ela nos permite direcionar javascripts para actions de controllers específicas.</p>
+
+<p>Esse é o primeiro passo para estruturar sua aplicação. Adicionar no
+<code>vendor/assets/javascripts/</code> o arquivo <code>page.min.js</code>.</p>
+
+<p>Tendo adicionado ao vendor, precisamos incluir no nosso <code>application.js</code>:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">//= require page.min</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">$</span><span class="p">(</span><span class="nb">document</span><span class="p">).</span><span class="nx">ready</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>  <span class="c1">// runs page js</span>
+</span><span class='line'>  <span class="nx">page</span><span class="p">.</span><span class="nx">dispatch</span><span class="p">();</span>
+</span><span class='line'><span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Configurado nosso <code>application.js</code>, bora identificar nossas actions em nosso
+template. Para isso, abra seu template <code>views/layouts/application.html.erb</code>
+e insira:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'><span class="nt">&lt;body</span> <span class="na">data-page=</span><span class="s">&quot;&lt;%= controller_path %&gt;#&lt;%= action_name %&gt;&quot;</span><span class="nt">&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Estrutura de diretórios</h2>
+
+<p>Com tudo preparado, vamos criar um diretório em:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>app/assets/javascripts/pages/
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>E criemos nosso primeiro script que roda somente para a rota &ldquo;tweets#index&rdquo;:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">// pages/tweets.js</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">page</span><span class="p">.</span><span class="nx">at</span><span class="p">(</span><span class="s2">&quot;tweets#index&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>  <span class="nx">alert</span><span class="p">(</span><span class="s2">&quot;showing my tweets&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">})</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">page</span><span class="p">.</span><span class="nx">at</span><span class="p">(</span><span class="s2">&quot;tweets#show&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>  <span class="nx">alert</span><span class="p">(</span><span class="s2">&quot;showing one tweet&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">})</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Adicione no <code>application.js</code> o diretório de <code>/pages</code> logo abaixo
+da inclusão do <code>page.min</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="c1">//= require page.min</span>
+</span><span class='line'><span class="c1">//= require_tree ./pages</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>E voilá.</p>
+
+<p>Temos tudo em uma estrutura escalável, de fácil manutenção e isolada de scripts.</p>
+
+<p>Foi um grande aprendizado para mim que, no início, jogava meus scripts de forma
+desornenada dentro do <code>application.js</code> ou em <code>arquivos</code> desconexos para inclusão direta
+nas views ou com <code>ifs</code> nojentos.</p>
+
+<p>Espero ter ajudado. ;-)</p>
+]]></content>
+  </entry>
   
 </feed>
