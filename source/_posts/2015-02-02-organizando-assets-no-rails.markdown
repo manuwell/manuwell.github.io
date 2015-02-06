@@ -17,6 +17,8 @@ e, de forma modularizada, compôr nosso javascript da aplicação.
 O que em nenhum lugar se fala ou comenta é: **como fazer scripts que rodem
 em páginas específicas? Como estruturar de forma escalável seus assets?**
 
+<!-- more -->
+
 ## Como estruturar então?
 
 Em projetos que estou trabalhando começamos a usar uma `lib js` chamada
