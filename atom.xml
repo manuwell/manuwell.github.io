@@ -4,7 +4,7 @@
   <title><![CDATA[Blog do ManuWell]]></title>
   <link href="http://wjsantos.github.io/atom.xml" rel="self"/>
   <link href="http://wjsantos.github.io/"/>
-  <updated>2015-02-06T21:24:34-02:00</updated>
+  <updated>2015-02-06T21:51:48-02:00</updated>
   <id>http://wjsantos.github.io/</id>
   <author>
     <name><![CDATA[Wellington Santos]]></name>
@@ -12,6 +12,47 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Banalização Das Gems]]></title>
+    <link href="http://wjsantos.github.io/blog/2015/02/06/banalizacao-das-gems/"/>
+    <updated>2015-02-06T21:27:33-02:00</updated>
+    <id>http://wjsantos.github.io/blog/2015/02/06/banalizacao-das-gems</id>
+    <content type="html"><![CDATA[<p>Evite adicionar <code>gems</code> para funções específicas, ou que fazem
+mais do que você necessita.</p>
+
+<p>Vivemos uma era em que não faltam <code>gems</code> para as coisas
+mais específicas possíveis. Temos <code>gems</code> para instalação de
+bootstraps, deixar console colorido e por aí afora.</p>
+
+<!-- more -->
+
+
+<h2>Banalização das GEMS</h2>
+
+<p>Com <code>gems</code> cada vez mais específicas e sem um critério para sua
+instalação na aplicação, vamos cada vez mais inflando nosso projeto
+com dependências externas.</p>
+
+<p>Essas <code>gems</code> podem possuir suporte, mas por vezes não conseguem
+se manter atualizada ao longo da evolução da sua <code>aplicação</code>.</p>
+
+<p>Quando houver a necessidade de atualização de seu rails por exemplo,
+e uma dessas <code>gems</code> específicas não der suporte, vc. se encontrará numa
+situação difícil. Sem tempo hábil para a remoção da <code>gem</code> que quebra
+sua aplicação vc. provavelmente optará por deixar de lado
+a atualização de seu <code>rails</code>.</p>
+
+<h2>Conclusão</h2>
+
+<p>Tenha sempre o menor número de dependências em seu projeto. Abra os fontes
+das <code>gems</code> que deseja instalar. Veja se a sua necessidade não é um trecho
+de código que possa ser extraído em um <code>initializer</code>, <code>lib</code> dentro do rails.</p>
+
+<p>Tenha sempre seu <code>Gemfile</code> o mais enxuto possível. Isso lhe facilitará em
+manter sua aplicação atualizada e lhe gerará menos dor de cabeça no futuro.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Organizando Assets De Javascript No Rails]]></title>
