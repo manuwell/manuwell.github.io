@@ -4,7 +4,7 @@
   <title><![CDATA[Blog do ManuWell]]></title>
   <link href="http://wjsantos.github.io/atom.xml" rel="self"/>
   <link href="http://wjsantos.github.io/"/>
-  <updated>2015-02-06T21:51:48-02:00</updated>
+  <updated>2015-03-07T19:23:08-03:00</updated>
   <id>http://wjsantos.github.io/</id>
   <author>
     <name><![CDATA[Wellington Santos]]></name>
@@ -12,6 +12,89 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Importando Certificado SSL No Ubuntu]]></title>
+    <link href="http://wjsantos.github.io/blog/2015/03/07/importando-certificado-ssl-no-ubuntu/"/>
+    <updated>2015-03-07T18:37:29-03:00</updated>
+    <id>http://wjsantos.github.io/blog/2015/03/07/importando-certificado-ssl-no-ubuntu</id>
+    <content type="html"><![CDATA[<p>Fala galera, blza?! Hoje vou compartilhar com vocês um problema
+que passamos com certificados SSL em nosso ambiente de QA.</p>
+
+<h2>Cenário</h2>
+
+<p>Conversa entre duas aplicações server-side com certificado SSL gerado via comando
+openssl, que chamarei neste post de certificado auto-gerado.</p>
+
+<!-- more -->
+
+
+<h2>O problema</h2>
+
+<p>Quando a aplicação tentava conversar com nossa aplicação interna de OAuth via HTTPS,
+com um certificado auto-gerado ela crashava.</p>
+
+<p>Analisando os logs da aplicação que fazia o request, vímos uma mensagem de erro
+de certificado SSL inválido.</p>
+
+<p>Lógico que o certificado SSL era inválido, pois estávamos usando um que havíamos
+gerado para nosso provedor de oauth, <code>oauth.provider.com</code>. Não eramos uma <code>CA</code> válida.
+Então, como resolver esse problema?</p>
+
+<h2>Solução</h2>
+
+<p>Pegamos o certificado gerado pelo comando:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo openssl req -x509 -nodes -days <span class="m">365</span> -newkey rsa:2048 -keyout oauth.provider.com.key
+</span><span class='line'>-out oauth.provider.com.crt
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>e, na máquina da aplicação que fazia o request <code>HTTPS</code> para o servidor de OAuth, importamos
+o <code>.crt</code> dentro do <code>Sistema Operacional</code>.</p>
+
+<p>Os certificados que o <code>SO</code> acredita serem válidos e de entidades certificadoras, as <code>CA</code>s,
+ficam no diretório <code>/usr/share/ca-certificates</code>.</p>
+
+<p>Todo request <code>HTTPS</code> no processo de validação de certificado olha para esse diretório.
+Se o nosso certificado estivesse ali; batata! resolvido o problema.</p>
+
+<p>Jogamos nosso certificado dentro desse diretório e avisamos o <code>SO</code> para recarregar
+os certificados:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># jogando o certificado do provedor de autenticação no dir de certificados</span>
+</span><span class='line'>sudo cp oauth.provider.com.crt /usr/share/ca-certificates/
+</span><span class='line'>
+</span><span class='line'><span class="c"># adicionando novo certificado na listagem</span>
+</span><span class='line'>sudo <span class="nb">echo </span>oauth.provider.com &gt;&gt; /etc/ca-certificates.conf
+</span><span class='line'>
+</span><span class='line'><span class="c"># atualizando a lista de certificados existentes</span>
+</span><span class='line'>sudo update-ca-certificates -f
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Quando a aplicação realizou o request HTTPS ao nosso OAuth provider com o certificado importado.
+Tudo fluiu perfeitamente bem.</p>
+
+<p>Resolvemos um problema de comunicação no nível do <code>SO</code>. Sem precisar alterar uma linha de código da aplicação.</p>
+
+<p>Sugestões como alterar o código para ignorar o certificado foram levantadas mas que bom,
+que essa resolveu. Afinal, esse era um problema de ambiente e não queríamos comprar um certificado SSL
+somente para o ambiente de <code>QA</code>.</p>
+
+<p>É isso! E simbora!</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Banalização Das Gems]]></title>

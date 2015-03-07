@@ -5,13 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Banalização Das Gems - Blog do ManuWell</title>
+  <title>Importando Certificado SSL No Ubuntu - Blog do ManuWell</title>
   <meta name="author" content="Wellington Santos">
 
   
-  <meta name="description" content="Evite adicionar gems para funções específicas, ou que fazem
-mais do que você necessita. Vivemos uma era em que não faltam gems para as coisas
-mais &hellip;">
+  <meta name="description" content="Fala galera, blza?! Hoje vou compartilhar com vocês um problema
+que passamos com certificados SSL em nosso ambiente de QA. Cenário Conversa entre &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -20,7 +19,7 @@ mais &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://wjsantos.github.io/blog/2015/02/06/banalizacao-das-gems/">
+  <link rel="canonical" href="http://wjsantos.github.io/blog/2015/03/07/importando-certificado-ssl-no-ubuntu/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Blog do ManuWell" type="application/atom+xml">
@@ -82,7 +81,7 @@ mais &hellip;">
   
   <header>
     
-      <h1 class="entry-title">Banalização Das Gems</h1>
+      <h1 class="entry-title">Importando Certificado SSL No Ubuntu</h1>
     
     
       <p class="meta">
@@ -91,46 +90,88 @@ mais &hellip;">
 
 
 
-<time class='entry-date' datetime='2015-02-06T21:27:33-02:00'><span class='date'>06/02/2015</span> <span class='time'>9:27 pm</span></time>
+<time class='entry-date' datetime='2015-03-07T18:37:29-03:00'><span class='date'>07/03/2015</span> <span class='time'>6:37 pm</span></time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>Evite adicionar <code>gems</code> para funções específicas, ou que fazem
-mais do que você necessita.</p>
+<div class="entry-content"><p>Fala galera, blza?! Hoje vou compartilhar com vocês um problema
+que passamos com certificados SSL em nosso ambiente de QA.</p>
 
-<p>Vivemos uma era em que não faltam <code>gems</code> para as coisas
-mais específicas possíveis. Temos <code>gems</code> para instalação de
-bootstraps, deixar console colorido e por aí afora.</p>
+<h2>Cenário</h2>
+
+<p>Conversa entre duas aplicações server-side com certificado SSL gerado via comando
+openssl, que chamarei neste post de certificado auto-gerado.</p>
 
 <!-- more -->
 
 
-<h2>Banalização das GEMS</h2>
+<h2>O problema</h2>
 
-<p>Com <code>gems</code> cada vez mais específicas e sem um critério para sua
-instalação na aplicação, vamos cada vez mais inflando nosso projeto
-com dependências externas.</p>
+<p>Quando a aplicação tentava conversar com nossa aplicação interna de OAuth via HTTPS,
+com um certificado auto-gerado ela crashava.</p>
 
-<p>Essas <code>gems</code> podem possuir suporte, mas por vezes não conseguem
-se manter atualizada ao longo da evolução da sua <code>aplicação</code>.</p>
+<p>Analisando os logs da aplicação que fazia o request, vímos uma mensagem de erro
+de certificado SSL inválido.</p>
 
-<p>Quando houver a necessidade de atualização de seu rails por exemplo,
-e uma dessas <code>gems</code> específicas não der suporte, vc. se encontrará numa
-situação difícil. Sem tempo hábil para a remoção da <code>gem</code> que quebra
-sua aplicação vc. provavelmente optará por deixar de lado
-a atualização de seu <code>rails</code>.</p>
+<p>Lógico que o certificado SSL era inválido, pois estávamos usando um que havíamos
+gerado para nosso provedor de oauth, <code>oauth.provider.com</code>. Não eramos uma <code>CA</code> válida.
+Então, como resolver esse problema?</p>
 
-<h2>Conclusão</h2>
+<h2>Solução</h2>
 
-<p>Tenha sempre o menor número de dependências em seu projeto. Abra os fontes
-das <code>gems</code> que deseja instalar. Veja se a sua necessidade não é um trecho
-de código que possa ser extraído em um <code>initializer</code>, <code>lib</code> dentro do rails.</p>
+<p>Pegamos o certificado gerado pelo comando:</p>
 
-<p>Tenha sempre seu <code>Gemfile</code> o mais enxuto possível. Isso lhe facilitará em
-manter sua aplicação atualizada e lhe gerará menos dor de cabeça no futuro.</p>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo openssl req -x509 -nodes -days <span class="m">365</span> -newkey rsa:2048 -keyout oauth.provider.com.key
+</span><span class='line'>-out oauth.provider.com.crt
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>e, na máquina da aplicação que fazia o request <code>HTTPS</code> para o servidor de OAuth, importamos
+o <code>.crt</code> dentro do <code>Sistema Operacional</code>.</p>
+
+<p>Os certificados que o <code>SO</code> acredita serem válidos e de entidades certificadoras, as <code>CA</code>s,
+ficam no diretório <code>/usr/share/ca-certificates</code>.</p>
+
+<p>Todo request <code>HTTPS</code> no processo de validação de certificado olha para esse diretório.
+Se o nosso certificado estivesse ali; batata! resolvido o problema.</p>
+
+<p>Jogamos nosso certificado dentro desse diretório e avisamos o <code>SO</code> para recarregar
+os certificados:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># jogando o certificado do provedor de autenticação no dir de certificados</span>
+</span><span class='line'>sudo cp oauth.provider.com.crt /usr/share/ca-certificates/
+</span><span class='line'>
+</span><span class='line'><span class="c"># adicionando novo certificado na listagem</span>
+</span><span class='line'>sudo <span class="nb">echo </span>oauth.provider.com &gt;&gt; /etc/ca-certificates.conf
+</span><span class='line'>
+</span><span class='line'><span class="c"># atualizando a lista de certificados existentes</span>
+</span><span class='line'>sudo update-ca-certificates -f
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Quando a aplicação realizou o request HTTPS ao nosso OAuth provider com o certificado importado.
+Tudo fluiu perfeitamente bem.</p>
+
+<p>Resolvemos um problema de comunicação no nível do <code>SO</code>. Sem precisar alterar uma linha de código da aplicação.</p>
+
+<p>Sugestões como alterar o código para ignorar o certificado foram levantadas mas que bom,
+que essa resolveu. Afinal, esse era um problema de ambiente e não queríamos comprar um certificado SSL
+somente para o ambiente de <code>QA</code>.</p>
+
+<p>É isso! E simbora!</p>
 </div>
 
 
@@ -146,12 +187,12 @@ manter sua aplicação atualizada e lhe gerará menos dor de cabeça no futuro.<
 
 
 
-<time class='entry-date' datetime='2015-02-06T21:27:33-02:00'><span class='date'>06/02/2015</span> <span class='time'>9:27 pm</span></time>
+<time class='entry-date' datetime='2015-03-07T18:37:29-03:00'><span class='date'>07/03/2015</span> <span class='time'>6:37 pm</span></time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/gems/'>gems</a>, <a class='category' href='/blog/categories/rails/'>rails</a>
+    <a class='category' href='/blog/categories/linux/'>linux</a>, <a class='category' href='/blog/categories/ssl/'>ssl</a>
   
 </span>
 
@@ -160,7 +201,7 @@ manter sua aplicação atualizada e lhe gerará menos dor de cabeça no futuro.<
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://wjsantos.github.io/blog/2015/02/06/banalizacao-das-gems/" data-via="manuwell" data-counturl="http://wjsantos.github.io/blog/2015/02/06/banalizacao-das-gems/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://wjsantos.github.io/blog/2015/03/07/importando-certificado-ssl-no-ubuntu/" data-via="manuwell" data-counturl="http://wjsantos.github.io/blog/2015/03/07/importando-certificado-ssl-no-ubuntu/" >Tweet</a>
   
   
   
@@ -169,10 +210,8 @@ manter sua aplicação atualizada e lhe gerará menos dor de cabeça no futuro.<
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2015/02/06/organizando-assets-no-rails/" title="Previous Post: Organizando assets de javascript no rails">&laquo; Organizando assets de javascript no rails</a>
+        <a class="basic-alignment left" href="/blog/2015/02/06/banalizacao-das-gems/" title="Previous Post: Banalização das Gems">&laquo; Banalização das Gems</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2015/03/07/importando-certificado-ssl-no-ubuntu/" title="Next Post: Importando certificado SSL no Ubuntu">Importando certificado SSL no Ubuntu &raquo;</a>
       
     </p>
   </footer>
@@ -259,8 +298,8 @@ manter sua aplicação atualizada e lhe gerará menos dor de cabeça no futuro.<
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://wjsantos.github.io/blog/2015/02/06/banalizacao-das-gems/';
-        var disqus_url = 'http://wjsantos.github.io/blog/2015/02/06/banalizacao-das-gems/';
+        var disqus_identifier = 'http://wjsantos.github.io/blog/2015/03/07/importando-certificado-ssl-no-ubuntu/';
+        var disqus_url = 'http://wjsantos.github.io/blog/2015/03/07/importando-certificado-ssl-no-ubuntu/';
         var disqus_script = 'embed.js';
       
     (function () {
