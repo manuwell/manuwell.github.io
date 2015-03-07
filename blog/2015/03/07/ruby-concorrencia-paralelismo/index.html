@@ -5,12 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Importando Certificado SSL No Ubuntu - Blog do ManuWell</title>
+  <title>Ruby - Concorrência vs Paralelismo - Blog do ManuWell</title>
   <meta name="author" content="Wellington Santos">
 
   
-  <meta name="description" content="Fala galera, blza?! Hoje vou compartilhar com vocês um problema
-que passamos com certificados SSL em nosso ambiente de QA. Cenário Conversa entre &hellip;">
+  <meta name="description" content="
+">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +19,7 @@ que passamos com certificados SSL em nosso ambiente de QA. Cenário Conversa ent
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://wjsantos.github.io/blog/2015/03/07/importando-certificado-ssl-no-ubuntu/">
+  <link rel="canonical" href="http://wjsantos.github.io/blog/2015/03/07/ruby-concorrencia-paralelismo/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Blog do ManuWell" type="application/atom+xml">
@@ -81,7 +81,7 @@ que passamos com certificados SSL em nosso ambiente de QA. Cenário Conversa ent
   
   <header>
     
-      <h1 class="entry-title">Importando Certificado SSL No Ubuntu</h1>
+      <h1 class="entry-title">Ruby - Concorrência vs Paralelismo</h1>
     
     
       <p class="meta">
@@ -90,92 +90,14 @@ que passamos com certificados SSL em nosso ambiente de QA. Cenário Conversa ent
 
 
 
-<time class='entry-date' datetime='2015-03-07T18:37:29-03:00'><span class='date'>07/03/2015</span> <span class='time'>6:37 pm</span></time>
+<time class='entry-date' datetime='2015-03-07T19:25:54-03:00'><span class='date'>07/03/2015</span> <span class='time'>7:25 pm</span></time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>Fala galera, blza?! Hoje vou compartilhar com vocês um problema
-que passamos com certificados SSL em nosso ambiente de QA.</p>
-
-<h2>Cenário</h2>
-
-<p>Conversa entre duas aplicações server-side com certificado SSL gerado via comando
-openssl, que chamarei neste post de certificado auto-gerado.</p>
-
-<!-- more -->
-
-
-<h2>O problema</h2>
-
-<p>Quando a aplicação tentava conversar com nossa aplicação interna de OAuth via HTTPS,
-com um certificado auto-gerado ela crashava.</p>
-
-<p>Analisando os logs da aplicação que fazia o request, vímos uma mensagem de erro
-de certificado SSL inválido.</p>
-
-<p>Lógico que o certificado SSL era inválido, pois estávamos usando um que havíamos
-gerado para nosso provedor de oauth, <code>oauth.provider.com</code>. Não eramos uma <code>CA</code> válida.
-Então, como resolver esse problema?</p>
-
-<h2>Solução</h2>
-
-<p>Pegamos o certificado gerado pelo comando:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo openssl req -x509 -nodes -days <span class="m">365</span> -newkey rsa:2048 -keyout oauth.provider.com.key
-</span><span class='line'>-out oauth.provider.com.crt
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>e, na máquina da aplicação que fazia o request <code>HTTPS</code> para o servidor de OAuth, importamos
-o <code>.crt</code> dentro do <code>Sistema Operacional</code>.</p>
-
-<p>Os certificados que o <code>SO</code> acredita serem válidos e de entidades certificadoras, as <code>CA</code>s,
-ficam no diretório <code>/usr/share/ca-certificates</code>.</p>
-
-<p>Todo request <code>HTTPS</code> no processo de validação de certificado olha para esse diretório.
-Se o nosso certificado estivesse ali; batata! resolvido o problema.</p>
-
-<p>Jogamos nosso certificado dentro desse diretório e avisamos o <code>SO</code> para recarregar
-os certificados:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="c"># jogando o certificado do provedor de autenticação no dir de certificados</span>
-</span><span class='line'>sudo cp oauth.provider.com.crt /usr/share/ca-certificates/
-</span><span class='line'>
-</span><span class='line'><span class="c"># adicionando novo certificado na listagem</span>
-</span><span class='line'>sudo <span class="nb">echo </span>oauth.provider.com &gt;&gt; /etc/ca-certificates.conf
-</span><span class='line'>
-</span><span class='line'><span class="c"># atualizando a lista de certificados existentes</span>
-</span><span class='line'>sudo update-ca-certificates -f
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Quando a aplicação realizou o request HTTPS ao nosso OAuth provider com o certificado importado.
-Tudo fluiu perfeitamente bem.</p>
-
-<p>Resolvemos um problema de comunicação no nível do <code>SO</code>. Sem precisar alterar uma linha de código da aplicação.</p>
-
-<p>Sugestões como alterar o código para ignorar o certificado foram levantadas mas que bom,
-que essa resolveu. Afinal, esse era um problema de ambiente e não queríamos comprar um certificado SSL
-somente para o ambiente de <code>QA</code>.</p>
-
-<p>É isso! E simbora!</p>
-
-<h2>Referências</h2>
-
-<p><a href="http://man.he.net/man8/update-ca-certificates">http://man.he.net/man8/update-ca-certificates</a></p>
+<div class="entry-content">
 </div>
 
 
@@ -191,12 +113,12 @@ somente para o ambiente de <code>QA</code>.</p>
 
 
 
-<time class='entry-date' datetime='2015-03-07T18:37:29-03:00'><span class='date'>07/03/2015</span> <span class='time'>6:37 pm</span></time>
+<time class='entry-date' datetime='2015-03-07T19:25:54-03:00'><span class='date'>07/03/2015</span> <span class='time'>7:25 pm</span></time>
       
 
 <span class="categories">
   
-    <a class='category' href='/blog/categories/linux/'>linux</a>, <a class='category' href='/blog/categories/ssl/'>ssl</a>
+    <a class='category' href='/blog/categories/gil/'>gil</a>, <a class='category' href='/blog/categories/ruby/'>ruby</a>, <a class='category' href='/blog/categories/threads/'>threads</a>
   
 </span>
 
@@ -205,7 +127,7 @@ somente para o ambiente de <code>QA</code>.</p>
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://wjsantos.github.io/blog/2015/03/07/importando-certificado-ssl-no-ubuntu/" data-via="manuwell" data-counturl="http://wjsantos.github.io/blog/2015/03/07/importando-certificado-ssl-no-ubuntu/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://wjsantos.github.io/blog/2015/03/07/ruby-concorrencia-paralelismo/" data-via="manuwell" data-counturl="http://wjsantos.github.io/blog/2015/03/07/ruby-concorrencia-paralelismo/" >Tweet</a>
   
   
   
@@ -214,10 +136,8 @@ somente para o ambiente de <code>QA</code>.</p>
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2015/02/06/banalizacao-das-gems/" title="Previous Post: Banalização das Gems">&laquo; Banalização das Gems</a>
+        <a class="basic-alignment left" href="/blog/2015/03/07/importando-certificado-ssl-no-ubuntu/" title="Previous Post: Importando certificado SSL no Ubuntu">&laquo; Importando certificado SSL no Ubuntu</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2015/03/07/ruby-concorrencia-paralelismo/" title="Next Post: Ruby - Concorrência VS Paralelismo">Ruby - Concorrência VS Paralelismo &raquo;</a>
       
     </p>
   </footer>
@@ -308,8 +228,8 @@ somente para o ambiente de <code>QA</code>.</p>
       
         
         // var disqus_developer = 1;
-        var disqus_identifier = 'http://wjsantos.github.io/blog/2015/03/07/importando-certificado-ssl-no-ubuntu/';
-        var disqus_url = 'http://wjsantos.github.io/blog/2015/03/07/importando-certificado-ssl-no-ubuntu/';
+        var disqus_identifier = 'http://wjsantos.github.io/blog/2015/03/07/ruby-concorrencia-paralelismo/';
+        var disqus_url = 'http://wjsantos.github.io/blog/2015/03/07/ruby-concorrencia-paralelismo/';
         var disqus_script = 'embed.js';
       
     (function () {

@@ -4,7 +4,7 @@
   <title><![CDATA[Blog do ManuWell]]></title>
   <link href="http://wjsantos.github.io/atom.xml" rel="self"/>
   <link href="http://wjsantos.github.io/"/>
-  <updated>2015-03-07T19:23:08-03:00</updated>
+  <updated>2015-03-07T19:34:19-03:00</updated>
   <id>http://wjsantos.github.io/</id>
   <author>
     <name><![CDATA[Wellington Santos]]></name>
@@ -12,6 +12,15 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Ruby - Concorrência vs Paralelismo]]></title>
+    <link href="http://wjsantos.github.io/blog/2015/03/07/ruby-concorrencia-paralelismo/"/>
+    <updated>2015-03-07T19:25:54-03:00</updated>
+    <id>http://wjsantos.github.io/blog/2015/03/07/ruby-concorrencia-paralelismo</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Importando Certificado SSL No Ubuntu]]></title>
@@ -93,6 +102,10 @@ que essa resolveu. Afinal, esse era um problema de ambiente e não queríamos co
 somente para o ambiente de <code>QA</code>.</p>
 
 <p>É isso! E simbora!</p>
+
+<h2>Referências</h2>
+
+<p><a href="http://man.he.net/man8/update-ca-certificates">http://man.he.net/man8/update-ca-certificates</a></p>
 ]]></content>
   </entry>
   

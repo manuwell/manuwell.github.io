@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Ssl | Blog do ManuWell]]></title>
   <link href="http://wjsantos.github.io/blog/categories/ssl/atom.xml" rel="self"/>
   <link href="http://wjsantos.github.io/"/>
-  <updated>2015-03-07T19:23:08-03:00</updated>
+  <updated>2015-03-07T19:34:19-03:00</updated>
   <id>http://wjsantos.github.io/</id>
   <author>
     <name><![CDATA[Wellington Santos]]></name>
@@ -83,6 +83,10 @@ que essa resolveu. Afinal, esse era um problema de ambiente e não queríamos co
 somente para o ambiente de <code>QA</code>.</p>
 
 <p>É isso! E simbora!</p>
+
+<h2>Referências</h2>
+
+<p><a href="http://man.he.net/man8/update-ca-certificates">http://man.he.net/man8/update-ca-certificates</a></p>
 ]]></content>
   </entry>
   
