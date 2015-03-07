@@ -72,3 +72,7 @@ que essa resolveu. Afinal, esse era um problema de ambiente e não queríamos co
 somente para o ambiente de `QA`.
 
 É isso! E simbora!
+
+## Referências
+
+[http://man.he.net/man8/update-ca-certificates](http://man.he.net/man8/update-ca-certificates)
